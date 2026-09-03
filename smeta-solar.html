@@ -59,6 +59,11 @@
     <tbody></tbody>
   </table></div>
 
+  <h2><span>Итого по смете</span><span class="sum" id="sumAll"></span></h2>
+  <div class="tablewrap"><table id="tSummary">
+    <tbody></tbody>
+  </table></div>
+
   <p class="foot" id="foot"></p>
 </div>
 
@@ -66,6 +71,9 @@
 const PAID_TARGET = 285000;
 const EXTRA_TARGET = 325000;
 const RATE_3D = 774.65;
+const TAX = 0.10;
+const USD_RATE = 86.75;
+const SERVICES_USD = 600;
 
 const STAGES = [
  {id:'3d', block:'paid', rate:RATE_3D, t:'3D-модели · Подготовка исходников, автоматизация, материалы', items:[
@@ -157,6 +165,14 @@ function render(){
   document.querySelector('#tExtra tbody').innerHTML = e.html;
   document.getElementById('sumPaid').textContent = fmt0(PAID_TARGET)+' ₽';
   document.getElementById('sumExtra').textContent = fmt0(EXTRA_TARGET)+' ₽';
+  const all = PAID_TARGET+EXTRA_TARGET, services = SERVICES_USD*USD_RATE;
+  document.getElementById('sumAll').textContent = fmt0(all)+' ₽';
+  document.querySelector('#tSummary tbody').innerHTML = `
+    <tr><td>Оплачено через Solar Staff</td><td class="num" style="width:160px">${fmt0(PAID_TARGET)}</td></tr>
+    <tr><td>Сверх оплаченного, к оплате</td><td class="num">${fmt0(EXTRA_TARGET)}</td></tr>
+    <tr class="total"><td>Всего работ за июль и август, без НДС</td><td class="num">${fmt0(all)}</td></tr>
+    <tr><td>В том числе налог ${TAX*100} %</td><td class="num">${fmt0(all*TAX)}</td></tr>
+    <tr><td>В том числе оплата сервисов и подписок на рабочие инструменты, ${SERVICES_USD} $ по курсу ${fmt2(USD_RATE)} ₽</td><td class="num">${fmt0(services)}</td></tr>`;
   document.getElementById('hero').innerHTML = `
     <div class="card"><div class="label">Всего работ за два месяца</div><div class="value">${fmt0(PAID_TARGET+EXTRA_TARGET)} ₽</div><div class="hint">${p.hours+e.hours} ч, без НДС</div></div>
     <div class="card paid"><div class="label">Оплачено через Solar Staff</div><div class="value">${fmt0(PAID_TARGET)} ₽</div><div class="hint">${p.hours} ч, закрыто отчётами за июль и август</div></div>
