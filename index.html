@@ -21,12 +21,22 @@
   button.small{padding:3px 8px;font-size:13px;border-radius:6px}
   button.ghost{border-color:transparent;background:transparent;color:var(--muted)}
   button.ghost:hover{color:var(--accent)}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 28px}
-  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .card .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-  .card .value{font-size:24px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
-  .card .hint{font-size:12px;color:var(--muted);margin-top:4px}
-  .card.total{border-color:var(--accent);background:var(--accent-soft)}
+  .hero{background:var(--accent-soft);border:1px solid var(--accent);border-radius:14px;padding:22px 26px;margin:0 0 8px}
+  .hero .label{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .hero .big{font-size:44px;font-weight:700;line-height:1.1;margin:6px 0 8px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .hero .hint{font-size:14px;color:var(--ink)}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin:0 0 6px}
+  .fl{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .fl .t{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-weight:600;font-size:16px;margin-bottom:8px;font-variant-numeric:tabular-nums}
+  .fl .t small{font-weight:400;color:var(--muted);font-size:13px}
+  .fl ul{list-style:none;margin:0;padding:0}
+  .fl li{display:grid;grid-template-columns:1fr auto;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:14px;font-variant-numeric:tabular-nums}
+  .fl li span:last-child{white-space:nowrap;text-align:right}
+  .fl li.sub{padding-left:16px;color:var(--muted);font-size:13px;border-top:none;padding-top:0}
+  .fl li.res{font-weight:600}
+  .fl li.res.ok span:last-child{color:var(--ok)}
+  .fl li.res.warn span:last-child{color:var(--warn)}
+  .fl .side{font-size:13px;color:var(--muted);margin-top:8px}
   h2{font-size:18px;margin:34px 0 10px}
   h3{font-size:15px;margin:22px 0 8px;display:flex;align-items:center;gap:10px}
   h3 .sum{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
@@ -89,7 +99,9 @@
     <button class="ghost" id="btnReset">Сбросить к исходным данным</button>
   </div>
 
-  <div class="cards" id="cards"></div>
+  <div class="hero" id="hero"></div>
+  <h2>Куда ушли деньги</h2>
+  <div class="flow" id="flow"></div>
 
   <section class="problems">
     <h2>Где проблема</h2>
@@ -209,13 +221,57 @@ function renderSection(kind, mount){
   });
 }
 
+const VAT = 1.22;
+const MONTHS = {'01':'январь','02':'февраль','03':'март','04':'апрель','05':'май','06':'июнь','07':'июль','08':'август','09':'сентябрь','10':'октябрь','11':'ноябрь','12':'декабрь'};
+
 function renderSummary(){
+  const ipPaid = sumOf(state.payments,1), ipClosed = sumOf(state.acts,1);
+  const ssNet = sumOf(state.payments,2), ssGross = ssNet*VAT, ssClosed = sumOf(state.acts,2), ssRest = ssNet - ssClosed;
+  const szPaid = sumOf(state.payments,0), szClosed = sumOf(state.acts,0);
+  const total = ipPaid + ssGross;
+
+  document.getElementById('hero').innerHTML = `
+    <div class="label">Перечислено ООО «Хорошие диваны» за 2026 год</div>
+    <div class="big">${fmt(total)}</div>
+    <div class="hint">ИП Зурнаджян ${fmt(ipPaid)} + Solar Staff ${fmt(ssGross)} с НДС 22%. Совпадает со сверкой заказчика от 03.09.2026.</div>`;
+
+  const ipGroups = {};
+  state.acts.filter(r=>r.on && r.ch===1).forEach(r=>{ const k=r.dog||'без договора'; ipGroups[k]=(ipGroups[k]||0)+parseSum(r.sum); });
+  const ipItems = Object.keys(ipGroups).sort((a,b)=>(a.startsWith('счёт')?1:0)-(b.startsWith('счёт')?1:0)).map(k=>`<li><span>${esc(k.startsWith('счёт')?'по счёту №16, без договора':'договор №'+k)}</span><span>${fmt(ipGroups[k])}</span></li>`).join('');
+  const ipDiff = ipPaid - ipClosed;
+
+  const ssMonths = {};
+  state.acts.filter(r=>r.on && r.ch===2).forEach(r=>{ const m=(r.date||'').split('.')[1]||'?'; ssMonths[m]=(ssMonths[m]||0)+parseSum(r.sum); });
+  const ssItems = Object.keys(ssMonths).sort().map(m=>`<li><span>отчёт за ${MONTHS[m]||m}, ${fmt(ssMonths[m]*VAT)} с НДС</span><span>${fmt(ssMonths[m])}</span></li>`).join('');
+
+  document.getElementById('flow').innerHTML = `
+    <div class="fl">
+      <div class="t"><span>ИП Зурнаджян</span><span>${fmt(ipPaid)}</span></div>
+      <ul>
+        <li class="sub"><span>закрыто актами</span><span></span></li>
+        ${ipItems}
+        <li class="res ${Math.abs(ipDiff)<0.005?'ok':'warn'}"><span>${Math.abs(ipDiff)<0.005?'долга нет':(ipDiff>0?'не закрыто':'актов больше, чем денег')}</span><span>${fmt(Math.abs(ipDiff))}</span></li>
+      </ul>
+    </div>
+    <div class="fl">
+      <div class="t"><span>Solar Staff</span><span>${fmt(ssGross)} <small>с НДС</small></span></div>
+      <ul>
+        <li><span>зачислено на баланс площадки, без НДС</span><span>${fmt(ssNet)}</span></li>
+        <li class="sub"><span>списано задачами</span><span></span></li>
+        ${ssItems}
+        <li class="res ${Math.abs(ssRest)<100?'ok':'warn'}"><span>остаток на балансе, ${fmt(ssRest*VAT)} с НДС</span><span>${fmt(ssRest)}</span></li>
+      </ul>
+      <div class="side">Отчёты площадки идут заказчику по ТКС и ЭДО. Пока отчёт за месяц не принят, его сумма у заказчика числится авансом.</div>
+    </div>
+    <div class="fl">
+      <div class="t"><span>Отдельно, не в сумме заказчика</span><span>${fmt(szPaid)}</span></div>
+      <ul>
+        <li><span>вёрстка сайта в апреле, самозанятый Позмогов</span><span>${fmt(szPaid)}</span></li>
+        <li class="res ${Math.abs(szPaid-szClosed)<0.005?'ok':'warn'}"><span>${Math.abs(szPaid-szClosed)<0.005?'закрыто чеком':'не закрыто'}</span><span>${fmt(szClosed)}</span></li>
+      </ul>
+    </div>`;
+
   const paid = sumOf(state.payments), closed = sumOf(state.acts);
-  const soft = state.payments.filter(r=>r.on && r.conf==='письмо').reduce((a,r)=>a+parseSum(r.sum),0);
-  document.getElementById('cards').innerHTML = `
-    <div class="card total"><div class="label">Проведено всего</div><div class="value">${fmt(paid)}</div><div class="hint">из них по письмам, без платёжек: ${fmt(soft)}</div></div>
-    <div class="card"><div class="label">Закрыто документами</div><div class="value">${fmt(closed)}</div><div class="hint">акты, отчёты, чеки</div></div>
-    <div class="card"><div class="label">Разница</div><div class="value ${paid-closed>=0?'pos':'neg'}">${fmt(paid-closed)}</div><div class="hint">${paid-closed>=0?'оплачено больше, чем закрыто':'актов больше, чем оплат'}</div></div>`;
   const tb = document.querySelector('#diffTable tbody'); tb.innerHTML='';
   CHANNELS.forEach((name,ch)=>{
     const p = sumOf(state.payments,ch), a = sumOf(state.acts,ch), d = p-a;
