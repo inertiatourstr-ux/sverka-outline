@@ -35,13 +35,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Фактическая смета, разложенная на сумму Solar Staff</h1>
-  <p class="sub">Те же 49 позиций и 619 часов, что на странице сметного расчёта, но ставка часа пересчитана так, чтобы итог совпал с деньгами, прошедшими через площадку Solar Staff по договору №1122452 с 15.07 по 03.09.2026.</p>
-
-  <div class="switch" id="switch">
-    <button data-t="gross" class="on">347 700 ₽ с НДС, как перечислил заказчик</button>
-    <button data-t="net">285 000 ₽ без НДС, как зачислено на баланс</button>
-  </div>
+  <h1>Смета работ за июль и август 2026 на 285 000 ₽</h1>
+  <p class="sub">Работы по сайту outline-mebel.ru и платформе b2b.outline-mebel.ru, выполненные за два месяца через площадку Solar Staff по договору №1122452. Сумма без НДС, как зачислено на баланс площадки. 49 позиций, шесть этапов, 619 часов.</p>
 
   <div class="hero" id="hero"></div>
 
@@ -50,12 +45,11 @@
     <tbody></tbody>
   </table></div>
 
-  <p class="foot">Ставка получена делением суммы Solar Staff на 619 часов, это результат договорённости, а не рыночная цена часа. Часы взяты из фактической сметы без изменений. Построчные суммы округлены до рубля, разница вынесена в строку «Округление». На площадке те же деньги проведены шестью задачами: 7072493, 7075650, 7087221 в июле и 7095124, 7100960, 7131113 в августе.</p>
+  <p class="foot">Ставка часа получена делением 285 000 ₽ на 619 часов. Построчные суммы округлены до рубля, разница вынесена в строку «Округление». На площадке Solar Staff те же работы проведены шестью задачами: 7072493, 7075650, 7087221 в июле и 7095124, 7100960, 7131113 в августе. Отчёты площадки за июль на 154 638,30 ₽ и за август на 130 353,10 ₽ без НДС в сумме дают 284 991,40 ₽, остаток баланса 8,60 ₽.</p>
 </div>
 
 <script>
-const VAT = 1.22;
-const TARGETS = {gross:347700, net:285000};
+const TARGET = 285000;
 const STAGES = [
  {t:'Этап 1 · Запуск работ, каталог, разделы партнёров', items:[
   ['Создание новых разделов в B2B-площадке для партнёров','Структура партнёрского кабинета на платформе: разделы, доступы, связь с сайтом через API',6],
@@ -118,8 +112,8 @@ const fmt0 = n => new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).forma
 const fmt2 = n => new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 const HOURS = STAGES.reduce((a,s)=>a+s.items.reduce((b,i)=>b+i[2],0),0);
 
-function render(mode){
-  const target = TARGETS[mode], rate = target/HOURS;
+function render(){
+  const target = TARGET, rate = target/HOURS;
   let n=0, html='', sumLines=0;
   STAGES.forEach(s=>{
     html += `<tr class="stage"><td colspan="5">${s.t}</td></tr>`;
@@ -131,18 +125,15 @@ function render(mode){
   const round = target - sumLines;
   html += `<tr><td>—</td><td>Округление<span class="d">Разница от округления построчных сумм до рубля</span></td><td class="num">—</td><td class="num">—</td><td class="num">${round<0?'−':''}${fmt0(Math.abs(round))}</td></tr>`;
   html += `<tr class="total"><td></td><td>Итого по смете</td><td class="num">${HOURS}</td><td class="num">${fmt2(rate)}</td><td class="num">${fmt0(target)}</td></tr>`;
-  if(mode==='gross') html += `<tr><td></td><td>В том числе НДС 22 %</td><td></td><td></td><td class="num">${fmt0(target - target/VAT)}</td></tr>`;
   document.querySelector('#t tbody').innerHTML = html;
 
   document.getElementById('hero').innerHTML = `
-    <div class="card total"><div class="label">Итого по смете</div><div class="value">${fmt0(target)} ₽</div><div class="hint">${mode==='gross'?'перечислено заказчиком на Solar Staff с НДС 22 %':'зачислено на баланс площадки без НДС'}</div></div>
-    <div class="card"><div class="label">Объём</div><div class="value">${HOURS} ч</div><div class="hint">49 позиций, шесть этапов, часы без изменений</div></div>
-    <div class="card"><div class="label">Ставка часа</div><div class="value">${fmt2(rate)} ₽</div><div class="hint">в фактической смете было 403,88 ₽ при 250 000</div></div>
-    <div class="card"><div class="label">Прирост к фактической смете</div><div class="value">+${fmt0(target-250000)} ₽</div><div class="hint">${fmt0((target/250000-1)*100)} % к ставке, часы те же</div></div>`;
-  document.querySelectorAll('#switch button').forEach(b=>b.classList.toggle('on', b.dataset.t===mode));
+    <div class="card total"><div class="label">Итого по смете</div><div class="value">${fmt0(target)} ₽</div><div class="hint">без НДС, зачислено на баланс Solar Staff</div></div>
+    <div class="card"><div class="label">Период</div><div class="value">июль–август</div><div class="hint">2026 год, два месяца работ</div></div>
+    <div class="card"><div class="label">Объём</div><div class="value">${HOURS} ч</div><div class="hint">49 позиций, шесть этапов</div></div>
+    <div class="card"><div class="label">Ставка часа</div><div class="value">${fmt2(rate)} ₽</div><div class="hint">285 000 ₽ ÷ 619 ч</div></div>`;
 }
-document.getElementById('switch').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) render(b.dataset.t); });
-render('gross');
+render();
 </script>
 </body>
 </html>
