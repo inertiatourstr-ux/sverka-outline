@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сверка Outline 2026</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --paper:#fffdf9; --ink:#1d1b17; --muted:#6f6a60; --line:#e3ded3;
+    --accent:#c8501f; --accent-soft:#fbe9df; --ok:#2f7a4a; --ok-soft:#e4f2e8; --warn:#9a6b00; --warn-soft:#fbf1d6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,"Segoe UI",Inter,Roboto,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 22px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+  button{font:inherit;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+  button:hover{border-color:#bdb6a8}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.small{padding:3px 8px;font-size:13px;border-radius:6px}
+  button.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+  button.ghost:hover{color:var(--accent)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 28px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .card .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .card .value{font-size:24px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+  .card .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .card.total{border-color:var(--accent);background:var(--accent-soft)}
+  h2{font-size:18px;margin:34px 0 10px}
+  h3{font-size:15px;margin:22px 0 8px;display:flex;align-items:center;gap:10px}
+  h3 .sum{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+  .tablewrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;min-width:760px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500;background:#faf8f3}
+  tr:last-child td{border-bottom:none}
+  tr.off td{opacity:.42}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  td[contenteditable]{outline:none;border-radius:4px;min-width:60px}
+  td[contenteditable]:focus{background:#fff7e6;box-shadow:0 0 0 2px #f2d9a6 inset}
+  input.sum{font:inherit;width:120px;text-align:right;border:1px solid transparent;background:transparent;padding:3px 6px;border-radius:6px;font-variant-numeric:tabular-nums}
+  input.sum:hover{border-color:var(--line)}
+  input.sum:focus{outline:none;border-color:#e0b46a;background:#fff7e6}
+  select{font:inherit;border:1px solid transparent;background:transparent;padding:3px 4px;border-radius:6px;color:inherit}
+  select:hover{border-color:var(--line)}
+  .tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:#efece4;color:var(--muted)}
+  .tag.ok{background:var(--ok-soft);color:var(--ok)}
+  .tag.warn{background:var(--warn-soft);color:var(--warn)}
+  tfoot td{font-weight:600;background:#faf8f3}
+  .diff{margin-top:28px}
+  .diff table{min-width:560px}
+  .pos{color:var(--ok)} .neg{color:var(--accent)}
+  .note{color:var(--muted);font-size:13px;margin:8px 0 0}
+  .problems{margin:0 0 10px}
+  .bycontract{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 0 14px}
+  .con{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .con.bad{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .con .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:8px}
+  .con .t b{font-size:15px}
+  .con .t small{color:var(--muted)}
+  .bar{display:grid;grid-template-columns:78px 1fr 110px;gap:8px;align-items:center;font-size:13px;margin:4px 0}
+  .bar .track{height:12px;background:#efece4;border-radius:6px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:6px;background:#8f8a7e}
+  .bar.paid .fill{background:var(--ok)}
+  .bar.closed .fill{background:var(--accent)}
+  .bar .v{text-align:right;font-variant-numeric:tabular-nums}
+  .con .verdict{margin-top:8px;font-size:13px}
+  .issues{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+  .issues li{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:14px}
+  .issues li.red{border-left-color:var(--accent)}
+  .issues li.green{border-left-color:var(--ok)}
+  .issues li b{display:block;margin-bottom:2px}
+  .foot{margin-top:40px;color:var(--muted);font-size:13px}
+  @media (max-width:640px){.wrap{padding:20px 12px 60px}h1{font-size:22px}}
+  @media print{.toolbar,button{display:none}body{background:#fff}.tablewrap{border:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Сверка расчётов с ООО «Хорошие диваны»</h1>
+  <p class="sub">Проект outline-mebel.ru, 2026 год. Суммы редактируются прямо в таблице, итоги считаются сами. Правки сохраняются в этом браузере.</p>
+
+  <div class="toolbar">
+    <button class="primary" id="btnExport">Скачать JSON</button>
+    <button id="btnImport">Загрузить JSON</button>
+    <input type="file" id="fileImport" accept="application/json" hidden>
+    <button id="btnPrint">Печать</button>
+    <button class="ghost" id="btnReset">Сбросить к исходным данным</button>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <section class="problems">
+    <h2>Где проблема</h2>
+    <div class="bycontract" id="byContract"></div>
+    <ul class="issues" id="issues"></ul>
+  </section>
+
+  <h2>Проведено (оплаты заказчика)</h2>
+  <div id="payments"></div>
+
+  <h2>Закрыто (акты, отчёты, чеки)</h2>
+  <div id="acts"></div>
+
+  <div class="diff">
+    <h2>Сверка по каналам</h2>
+    <div class="tablewrap"><table id="diffTable">
+      <thead><tr><th>Канал</th><th class="num">Проведено</th><th class="num">Закрыто</th><th class="num">Разница</th><th>Комментарий</th></tr></thead>
+      <tbody></tbody>
+      <tfoot></tfoot>
+    </table></div>
+    <p class="note">Плюс в разнице означает, что оплачено больше, чем закрыто документами. Минус означает, что актов выставлено больше, чем получено денег.</p>
+  </div>
+
+  <p class="foot">Источники: платёжные поручения, акт сверки №230 от 26.06.2026 с ИП, выписка Solar Staff «Списания и пополнения» за 15.07–03.09.2026, письма от 26.06 и 04.08.2026. По Solar Staff суммы указаны без НДС, как на балансе площадки: заказчик перевёл 347 700 с НДС 22%, на баланс зачислено 285 000, списано задачами 284 991,40, остаток 8,60. Каждое списание закрыто актом площадки. Строки с подтверждением «письмо» держатся только на словах заказчика.</p>
+</div>
+
+<script>
+const STORAGE_KEY = 'sverka-outline-2026-v3';
+const CHANNELS = ['Самозанятый Позмогов', 'ИП Зурнаджян', 'Solar Staff'];
+const CONFIRM = ['платёжка', 'акт сверки', 'письмо', 'акт', 'чек', 'отчёт', 'ЭДО', 'не подтверждено'];
+
+const DEFAULT = {
+  payments: [
+    {on:true, ch:0, dog:'060426', date:'09.04.2026', doc:'ПП №146', basis:'Счёт №28058586, договор №060426 (вёрстка сайта)', sum:55000, conf:'платёжка'},
+    {on:false, ch:1, dog:'2708', date:'29.08.2025', doc:'ПП №660', basis:'Договор №2708 от 29.08.2025 (2025 год, выключено)', sum:60000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'20426', date:'22.04.2026', doc:'ПП №165', basis:'Счёт №9, договор №20426', sum:25000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'20426', date:'30.04.2026', doc:'ПП №184', basis:'Договор №20426', sum:30000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'20426', date:'08.05.2026', doc:'ПП №203', basis:'Договор №20426', sum:50000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'20426', date:'20.05.2026', doc:'ПП №231', basis:'Договор №20426', sum:50000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'10/06-26', date:'10.06.2026', doc:'ПП №315', basis:'Аванс, договор №010626 / №10/06-26', sum:36000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'счёт №16', date:'11.06.2026', doc:'ПП №324', basis:'Счёт №16 от 02.06.2026, без договора', sum:16500, conf:'акт сверки'},
+    {on:true, ch:1, dog:'10/06-26', date:'26.06.2026', doc:'Счёт №22', basis:'Договор №10/06-26, оплата по письму Сулимы', sum:34000, conf:'письмо'},
+    {on:true, ch:1, dog:'10/06-26', date:'29.07.2026', doc:'платёж', basis:'Договор №10/06-26, «внесено 100 000» по письму от 04.08', sum:30000, conf:'письмо'},
+    {on:true, ch:2, dog:'1122452', date:'22.07.2026', doc:'Пополнение, счёт 29320-260719-1', basis:'ПП №466 на 61 000 с НДС 22%', sum:50000, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'29.07.2026', doc:'Пополнение, счёт 29320-260726-2', basis:'ПП №368 на 128 100 с НДС 22%', sum:105000, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'05.08.2026', doc:'Пополнение, счёт 29320-260802-3', basis:'ПП №398 на 128 100 с НДС 22%', sum:105000, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'24.08.2026', doc:'Пополнение, счёт 29320-260812-4', basis:'ПП №470 на 30 500 с НДС 22%', sum:25000, conf:'отчёт'},
+  ],
+  acts: [
+    {on:true, ch:0, dog:'060426', date:'09.04.2026', doc:'Чек самозанятого', basis:'Договор №060426, чек lknpd', sum:55000, conf:'чек'},
+    {on:false, ch:1, dog:'2708', date:'29.09.2025', doc:'Акт №1', basis:'Договор №2708 (2025 год, выключено)', sum:60000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'20426', date:'08.06.2026', doc:'Акт', basis:'Договор №20426, первый этап', sum:135000, conf:'акт сверки'},
+    {on:true, ch:1, dog:'20426', date:'01.07.2026', doc:'Акт №4', basis:'Договор №20426, «акт на 20 000»', sum:20000, conf:'ЭДО'},
+    {on:true, ch:1, dog:'счёт №16', date:'13.06.2026', doc:'Акт №1', basis:'По счёту №16, ожидает подписи в ЭДО', sum:16500, conf:'ЭДО'},
+    {on:true, ch:1, dog:'10/06-26', date:'10.07.2026', doc:'Акт №1', basis:'Договор №10/06-26, ожидает подписи', sum:35000, conf:'ЭДО'},
+    {on:true, ch:1, dog:'10/06-26', date:'12.07.2026', doc:'Акт №2 (в повторной отправке №3)', basis:'Договор №10/06-26, ожидает подписи', sum:35000, conf:'ЭДО'},
+    {on:true, ch:1, dog:'10/06-26', date:'17.07.2026', doc:'Акт №3', basis:'Договор №10/06-26, ожидает подписи', sum:50000, conf:'ЭДО'},
+    {on:true, ch:2, dog:'1122452', date:'22.07.2026', doc:'Задача 7072493', basis:'Создание ИИ-агентов сайта, списание с баланса', sum:49050, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'24.07.2026', doc:'Задача 7075650', basis:'Консультация по продвижению сайта', sum:948.30, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'29.07.2026', doc:'Задача 7087221', basis:'3D-модели мебели для сайта', sum:104640, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'02.08.2026', doc:'Задача 7095124', basis:'Консультация по моделированию мебели', sum:359.70, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'05.08.2026', doc:'Задача 7100960', basis:'Шейдинг тканей и материалов 3D', sum:104967, conf:'отчёт'},
+    {on:true, ch:2, dog:'1122452', date:'24.08.2026', doc:'Задача 7131113', basis:'Макет мобильного приложения', sum:25026.40, conf:'отчёт'},
+  ]
+};
+
+let state = load();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ const s = JSON.parse(raw); if(s && s.payments && s.acts) return s; }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+
+const fmt = n => { const v = Math.round(n*100)/100; const frac = Math.abs(v - Math.trunc(v)) > 0.0001; return new Intl.NumberFormat('ru-RU',{minimumFractionDigits:frac?2:0,maximumFractionDigits:2}).format(v) + ' ₽'; };
+const parseSum = v => { const n = parseFloat(String(v).replace(/\s/g,'').replace(',', '.')); return isNaN(n) ? 0 : n; };
+const sumOf = (rows, ch) => rows.filter(r => r.on && (ch===undefined || r.ch===ch)).reduce((a,r)=>a+parseSum(r.sum),0);
+
+function renderSection(kind, mount){
+  mount.innerHTML = '';
+  CHANNELS.forEach((name, ch) => {
+    const rows = state[kind].map((r,i)=>({r,i})).filter(x=>x.r.ch===ch);
+    const h = document.createElement('h3');
+    h.innerHTML = `<span>${name}</span><span class="sum">${fmt(sumOf(state[kind], ch))}</span>`;
+    mount.appendChild(h);
+    const wrap = document.createElement('div'); wrap.className = 'tablewrap';
+    const t = document.createElement('table');
+    t.innerHTML = `<thead><tr><th style="width:36px"></th><th style="width:100px">Дата</th><th style="width:95px">Договор</th><th style="width:190px">Документ</th><th>Основание</th><th style="width:150px">Подтверждение</th><th class="num" style="width:150px">Сумма</th><th style="width:40px"></th></tr></thead><tbody></tbody>`;
+    const tb = t.querySelector('tbody');
+    rows.forEach(({r,i}) => {
+      const tr = document.createElement('tr'); if(!r.on) tr.className='off';
+      tr.innerHTML = `
+        <td><input type="checkbox" ${r.on?'checked':''} data-k="${kind}" data-i="${i}" data-f="on" title="Учитывать в итогах"></td>
+        <td contenteditable data-k="${kind}" data-i="${i}" data-f="date">${esc(r.date)}</td>
+        <td contenteditable data-k="${kind}" data-i="${i}" data-f="dog">${esc(r.dog||'')}</td>
+        <td contenteditable data-k="${kind}" data-i="${i}" data-f="doc">${esc(r.doc)}</td>
+        <td contenteditable data-k="${kind}" data-i="${i}" data-f="basis">${esc(r.basis)}</td>
+        <td><select data-k="${kind}" data-i="${i}" data-f="conf">${CONFIRM.map(c=>`<option ${c===r.conf?'selected':''}>${c}</option>`).join('')}</select></td>
+        <td class="num"><input class="sum" value="${r.sum}" data-k="${kind}" data-i="${i}" data-f="sum" inputmode="decimal"></td>
+        <td><button class="ghost small" data-del="${kind}:${i}" title="Удалить строку">✕</button></td>`;
+      tb.appendChild(tr);
+    });
+    const add = document.createElement('tr');
+    add.innerHTML = `<td colspan="8"><button class="small" data-add="${kind}:${ch}">+ Добавить строку</button></td>`;
+    tb.appendChild(add);
+    wrap.appendChild(t); mount.appendChild(wrap);
+  });
+}
+
+function renderSummary(){
+  const paid = sumOf(state.payments), closed = sumOf(state.acts);
+  const soft = state.payments.filter(r=>r.on && r.conf==='письмо').reduce((a,r)=>a+parseSum(r.sum),0);
+  document.getElementById('cards').innerHTML = `
+    <div class="card total"><div class="label">Проведено всего</div><div class="value">${fmt(paid)}</div><div class="hint">из них по письмам, без платёжек: ${fmt(soft)}</div></div>
+    <div class="card"><div class="label">Закрыто документами</div><div class="value">${fmt(closed)}</div><div class="hint">акты, отчёты, чеки</div></div>
+    <div class="card"><div class="label">Разница</div><div class="value ${paid-closed>=0?'pos':'neg'}">${fmt(paid-closed)}</div><div class="hint">${paid-closed>=0?'оплачено больше, чем закрыто':'актов больше, чем оплат'}</div></div>`;
+  const tb = document.querySelector('#diffTable tbody'); tb.innerHTML='';
+  CHANNELS.forEach((name,ch)=>{
+    const p = sumOf(state.payments,ch), a = sumOf(state.acts,ch), d = p-a;
+    let c = 'сходится';
+    if(Math.abs(d)>0.005) c = d>0 ? (d<100 ? 'остаток на балансе' : 'не закрыто документами') : 'актов больше, чем денег';
+    tb.innerHTML += `<tr><td>${name}</td><td class="num">${fmt(p)}</td><td class="num">${fmt(a)}</td><td class="num ${d>=0?'pos':'neg'}">${fmt(d)}</td><td><span class="tag ${Math.abs(d)<0.005?'ok':'warn'}">${c}</span></td></tr>`;
+  });
+  document.querySelector('#diffTable tfoot').innerHTML = `<tr><td>Итого</td><td class="num">${fmt(paid)}</td><td class="num">${fmt(closed)}</td><td class="num ${paid-closed>=0?'pos':'neg'}">${fmt(paid-closed)}</td><td></td></tr>`;
+}
+
+const ISSUES = [
+  {level:'red', title:'Договор №10/06-26: актов на 20 000 больше, чем оплат', text:'Акты №1, №2, №3 на 120 000 против 100 000 полученных. Либо заказчик доплачивает 20 000 по допсоглашению на 120 000, либо акт №3 уменьшается с 50 000 до 30 000.'},
+  {level:'warn', title:'64 000 по ИП подтверждены только письмами', text:'Платежи 34 000 от 26.06 и 30 000 от 29.07 известны из писем Сулимы, платёжек в почте нет. Нужен свежий акт сверки с ИП от бухгалтерии «Хороших диванов».'},
+  {level:'warn', title:'Акты по договору 10/06-26 не подписаны в ЭДО', text:'В актах №1, №2, №3 стоит номер «100626», бухгалтерия 22.07 просила исправить на «10/06-26». Акты отправлены дважды с разной нумерацией, все висят со статусом «ожидается подпись контрагента». Акт №3 на 50 000 без сумм по позициям и с прописью «тридцать пять тысяч».'},
+  {level:'warn', title:'Акт на 16 500 по счёту №16 есть только у нас', text:'Платёж от 11.06 прошёл без договора. Акт №1 от 13.06 отправлен в ЭДО повторной пачкой, у заказчика он не подписан.'},
+  {level:'green', title:'Solar Staff сходится', text:'На баланс зачислено 285 000, списано задачами 284 991,40, остаток 8,60. Все списания закрыты актами площадки. Заказчик перевёл 347 700 с НДС 22 процента, это те же 285 000.'},
+  {level:'green', title:'Договор №20426 и вёрстка сайта сходятся', text:'155 000 оплачено и закрыто актами на 135 000 и 20 000. Вёрстка на 55 000 закрыта чеком самозанятого.'},
+];
+
+function renderProblems(){
+  const groups = {};
+  const add = (r, key) => { const g = r.dog || 'без договора'; groups[g] = groups[g] || {paid:0, closed:0, ch:r.ch}; groups[g][key] += parseSum(r.sum); };
+  state.payments.filter(r=>r.on).forEach(r=>add(r,'paid'));
+  state.acts.filter(r=>r.on).forEach(r=>add(r,'closed'));
+  const keys = Object.keys(groups);
+  const max = Math.max(1, ...keys.flatMap(k=>[groups[k].paid, groups[k].closed]));
+  document.getElementById('byContract').innerHTML = keys.map(k=>{
+    const g = groups[k], d = g.paid - g.closed, bad = Math.abs(d) >= 100;
+    let verdict = 'Сходится';
+    if(d <= -100) verdict = `Актов больше, чем денег, на ${fmt(-d)}`;
+    else if(d >= 100) verdict = `Не закрыто документами ${fmt(d)}`;
+    else if(d > 0.005) verdict = `Остаток ${fmt(d)}`;
+    return `<div class="con ${bad?'bad':''}">
+      <div class="t"><b>${esc(k==='1122452'?'Solar Staff №1122452':(k.startsWith('счёт')?k:'Договор №'+k))}</b><small>${CHANNELS[g.ch]}</small></div>
+      <div class="bar paid"><span>оплачено</span><div class="track"><div class="fill" style="width:${g.paid/max*100}%"></div></div><span class="v">${fmt(g.paid)}</span></div>
+      <div class="bar closed"><span>закрыто</span><div class="track"><div class="fill" style="width:${g.closed/max*100}%"></div></div><span class="v">${fmt(g.closed)}</span></div>
+      <div class="verdict"><span class="tag ${bad?'warn':'ok'}">${verdict}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('issues').innerHTML = ISSUES.map(i=>`<li class="${i.level}"><b>${esc(i.title)}</b>${esc(i.text)}</li>`).join('');
+}
+
+function esc(s){ return String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function renderAll(){
+  renderSection('payments', document.getElementById('payments'));
+  renderSection('acts', document.getElementById('acts'));
+  renderSummary();
+  renderProblems();
+}
+
+document.addEventListener('input', e => {
+  const el = e.target; if(!el.dataset || !el.dataset.f) return;
+  const row = state[el.dataset.k][+el.dataset.i]; const f = el.dataset.f;
+  if(f==='on') row.on = el.checked;
+  else if(f==='sum') row.sum = parseSum(el.value);
+  else if(el.tagName==='SELECT') row[f] = el.value;
+  else row[f] = el.textContent.trim();
+  save();
+  if(f==='on'){ renderAll(); } else { renderSummary(); renderProblems(); refreshHeaders(); }
+});
+document.addEventListener('change', e => {
+  const el = e.target; if(el.dataset && el.dataset.f==='sum'){ el.value = state[el.dataset.k][+el.dataset.i].sum; }
+});
+function refreshHeaders(){
+  ['payments','acts'].forEach(kind=>{
+    document.querySelectorAll(`#${kind} h3 .sum`).forEach((s,ch)=>{ s.textContent = fmt(sumOf(state[kind],ch)); });
+  });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.del){ const [k,i] = b.dataset.del.split(':'); if(confirm('Удалить строку?')){ state[k].splice(+i,1); save(); renderAll(); } }
+  if(b.dataset.add){ const [k,ch] = b.dataset.add.split(':'); state[k].push({on:true, ch:+ch, dog:'', date:'', doc:'', basis:'', sum:0, conf:'не подтверждено'}); save(); renderAll(); }
+});
+
+document.getElementById('btnReset').onclick = () => { if(confirm('Вернуть исходные данные? Ваши правки в этом браузере будут удалены.')){ state = JSON.parse(JSON.stringify(DEFAULT)); save(); renderAll(); } };
+document.getElementById('btnPrint').onclick = () => window.print();
+document.getElementById('btnExport').onclick = () => {
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'sverka-outline-2026.json'; a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById('btnImport').onclick = () => document.getElementById('fileImport').click();
+document.getElementById('fileImport').onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader(); rd.onload = () => { try{ const s = JSON.parse(rd.result); if(s.payments && s.acts){ state = s; save(); renderAll(); } else alert('Файл не похож на экспорт этой таблицы'); }catch(err){ alert('Не удалось прочитать JSON'); } };
+  rd.readAsText(f); e.target.value='';
+};
+
+renderAll();
+</script>
+</body>
+</html>
