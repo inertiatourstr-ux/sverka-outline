@@ -3,55 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Смета под Solar Staff</title>
+<title>Смета Outline за июль и август</title>
 <style>
-  :root{--bg:#f6f4ef;--paper:#fffdf9;--ink:#1d1b17;--muted:#6f6a60;--line:#e3ded3;--head:#faf8f3;--accent:#c8501f;--accent-soft:#fbe9df;--ok:#2f7a4a}
+  :root{--bg:#f6f4ef;--paper:#fffdf9;--ink:#1d1b17;--muted:#6f6a60;--line:#e3ded3;--head:#faf8f3;--accent:#c8501f;--accent-soft:#fbe9df;--ok:#2f7a4a;--ok-soft:#e4f2e8}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,"Segoe UI",Inter,Roboto,sans-serif}
   .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
   h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
-  .sub{color:var(--muted);margin:0 0 20px;max-width:70ch}
-  .switch{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 20px;background:var(--paper)}
-  .switch button{font:inherit;border:0;background:transparent;padding:9px 16px;cursor:pointer;color:var(--muted)}
-  .switch button.on{background:var(--accent);color:#fff}
-  .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 24px}
+  .sub{color:var(--muted);margin:0 0 20px;max-width:75ch}
+  .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 30px}
   .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .card.total{border-color:var(--accent);background:var(--accent-soft)}
+  .card.paid{border-color:var(--ok);background:var(--ok-soft)}
+  .card.extra{border-color:var(--accent);background:var(--accent-soft)}
   .card .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
   .card .value{font-size:26px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
   .card .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  h2{font-size:19px;margin:34px 0 4px;display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+  h2 .sum{font-variant-numeric:tabular-nums}
+  h2.paid .sum{color:var(--ok)} h2.extra .sum{color:var(--accent)}
+  .lead{color:var(--muted);margin:0 0 12px;max-width:75ch}
   .tablewrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px}
   table{border-collapse:collapse;width:100%;min-width:720px}
   th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
   th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500;background:var(--head)}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   tr.stage td{background:var(--head);font-weight:600;padding-top:12px}
+  tr.stage td .mv{float:right;font:inherit;font-size:12px;font-weight:400;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+  tr.stage td .mv:hover{color:var(--accent);border-color:var(--accent)}
   tr.sub td{font-weight:600;color:var(--muted)}
-  tr.total td{font-weight:700;font-size:16px;background:var(--accent-soft)}
+  tr.total td{font-weight:700;font-size:16px}
+  tr.total.paid td{background:var(--ok-soft)} tr.total.extra td{background:var(--accent-soft)}
   td .d{display:block;font-size:13px;color:var(--muted);margin-top:2px;max-width:64ch}
   .foot{margin-top:24px;color:var(--muted);font-size:13px;max-width:80ch}
-  @media print{.switch{display:none}}
+  @media print{.mv{display:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Смета работ за июль и август 2026 на 285 000 ₽</h1>
-  <p class="sub">Работы по сайту outline-mebel.ru и платформе b2b.outline-mebel.ru, выполненные за два месяца через площадку Solar Staff по договору №1122452. Сумма без НДС, как зачислено на баланс площадки. 49 позиций, шесть этапов, 619 часов.</p>
+  <h1>Смета работ по Outline за июль и август 2026</h1>
+  <p class="sub">Работы по сайту outline-mebel.ru, платформе b2b.outline-mebel.ru и подготовке 3D-моделей за два месяца. Первый блок покрыт деньгами, зачисленными на площадку Solar Staff. Второй блок выполнен сверх оплаченного объёма и подлежит оплате. Суммы без НДС.</p>
 
   <div class="hero" id="hero"></div>
 
-  <div class="tablewrap"><table id="t">
+  <h2 class="paid"><span>Оплачено через Solar Staff</span><span class="sum" id="sumPaid"></span></h2>
+  <p class="lead">3D-модели, карточки товара со снимками, поиск по фотографии и мобильная версия. Закрыто отчётами площадки за июль и август.</p>
+  <div class="tablewrap"><table id="tPaid">
     <thead><tr><th style="width:40px">№</th><th>Наименование работ</th><th class="num" style="width:80px">Часы</th><th class="num" style="width:110px">Ставка, ₽/ч</th><th class="num" style="width:130px">Сумма, ₽</th></tr></thead>
     <tbody></tbody>
   </table></div>
 
-  <p class="foot">Ставка часа получена делением 285 000 ₽ на 619 часов. Построчные суммы округлены до рубля, разница вынесена в строку «Округление». На площадке Solar Staff те же работы проведены шестью задачами: 7072493, 7075650, 7087221 в июле и 7095124, 7100960, 7131113 в августе. Отчёты площадки за июль на 154 638,30 ₽ и за август на 130 353,10 ₽ без НДС в сумме дают 284 991,40 ₽, остаток баланса 8,60 ₽.</p>
+  <h2 class="extra"><span>Выполнено сверх оплаченного</span><span class="sum" id="sumExtra"></span></h2>
+  <p class="lead">Разделы партнёров, многоязычность и SEO, фильтры и витрины, защита базы и рассылка. Эти работы в оплаченный объём не входили.</p>
+  <div class="tablewrap"><table id="tExtra">
+    <thead><tr><th style="width:40px">№</th><th>Наименование работ</th><th class="num" style="width:80px">Часы</th><th class="num" style="width:110px">Ставка, ₽/ч</th><th class="num" style="width:130px">Сумма, ₽</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+
+  <p class="foot" id="foot"></p>
 </div>
 
 <script>
-const TARGET = 285000;
+const PAID_TARGET = 285000;
+const EXTRA_TARGET = 200000;
+const RATE_3D = 774.65;
+
 const STAGES = [
- {t:'Этап 1 · Запуск работ, каталог, разделы партнёров', items:[
+ {id:'3d', block:'paid', rate:RATE_3D, t:'3D-модели · Подготовка исходников, автоматизация, материалы', items:[
+  ['Приёмка исходников','Инвентаризация файлов OBJ и FBX, проверка целостности, отбраковка непригодных',6],
+  ['Очистка геометрии','Мусорные объекты, дубли вершин, вырожденные грани, лишние UV-развёртки и материалы',24],
+  ['Нормализация','Масштаб, оси, начало координат, единицы измерения приведены к общему стандарту',12],
+  ['Сборка проектов Blender','Сцены, коллекции, единое именование объектов, параметры экспорта',16],
+  ['Скрипты автоматизации','Осмотр модели, съём габаритов, проверка симметрии, изоляция деталей, поштучный прогон по каталогу',28],
+  ['Аналитика по моделям','Полигонаж, габариты, сводные отчёты по всему набору',10],
+  ['Технические паспорта моделей','Карточка на каждую модель: размеры, состав, особенности геометрии, пригодность к рендеру',16],
+  ['Библиотека материалов под рендер','Настроенные материалы, готовые к применению на моделях без доработки',20],
+  ['Контроль, исправления, сдача','Выборочная проверка, устранение замечаний, передача набора',10]]},
+ {id:'s2', block:'paid', t:'Карточки товара и подготовка снимков', items:[
+  ['Вырезание мебели с сохранением собственной тени','Две маски на кадр: автоматический отбор предмета и расчёт по фону, чтобы тень осталась и не срезалась вместе с ножками',64],
+  ['Единый масштаб и общая линия пола по коллекциям','Все предметы коллекции приведены к одному масштабу и поставлены на общую линию пола',40],
+  ['Кадрирование под пропорции карточки и форматы витрин','Каждый снимок обрезан под пропорции карточки, отдельные кадры под квадратные и широкие блоки витрин',36],
+  ['Сборка карточек: привязка снимков к вариантам цвета','Кадры разложены по вариантам цвета и связаны с позициями каталога, чтобы переключение цвета меняло фотографию',20]]},
+ {id:'s4', block:'paid', t:'Поиск по фото, кабинет партнёра, мобильная версия', items:[
+  ['Поиск по фотографии','Переведён на базу из 43 моделей; переделан на визуальное сравнение формы, точность 5 из 5, добавлен блок похожих',22],
+  ['Разбор внешнего сервиса распознавания','Попытка поднять сторонний сервис, разбор ошибок доступа; решение обойтись своим каналом внутри хостинга',4],
+  ['Импорт партнёра Enza Home','Заведён партнёр, разобраны две страницы товара, позиции выгружены с пересчётом по курсу ЦБ на день загрузки',6],
+  ['Запоминание пользователя в браузере','Панель перестала выбрасывать на вход при обновлении: сессия восстанавливается из браузера, роль по сохранённому ключу',4],
+  ['Модальное окно входа под мобильные','Окно ввода пароля перестало уезжать за край: ширина, отступы, прокрутка и размер полей приведены под телефон',3],
+  ['Кабинет партнёра: загрузка товара','Загрузка вручную и таблицей с шаблоном, артикулы от бренда, публикация в партнёрский каталог',14],
+  ['Мобильная версия платформы','Панель и кабинет на телефоне: бургер-меню, прокручиваемые таблицы с закреплённым столбцом, перестроенные формы и модальные окна',18],
+  ['Адаптив шапки','Девять точек перестроения между 900 и 1680 пикселями; мега-меню перестало обрезаться, мобильное меню получило вложенные списки',14],
+  ['Страница «Производство» и чистка «О компании»','Новая страница из семи блоков: цеха, цикл, материалы, контрактное производство; на «О компании» удалён баннер',10]]},
+ {id:'s1', block:'extra', t:'Разделы партнёров, каталог, импорт брендов', items:[
   ['Создание новых разделов в B2B-площадке для партнёров','Структура партнёрского кабинета на платформе: разделы, доступы, связь с сайтом через API',6],
   ['Каталог: порядок вариантов и единая сетка','Светлые варианты цвета вперёд, тёмные в конец; выдача приведена к одной сетке на всех витринах',10],
   ['Шапка: логотип, бургер, контейнер','Логотип и бургер местами, логотип увеличен, расширен контейнер, раздел «Бизнесу» возвращён рядом с поиском по фото',8],
@@ -60,12 +102,7 @@ const STAGES = [
   ['Интерьерные снимки коллекций','Загрузка интерьерных кадров вместо пустых мест, по три фотографии на коллекцию, вывод в галереях',12],
   ['Создание структуры для импорта брендов партнёров','Разбор страницы партнёра как источника, пересчёт цен по курсу, заведение позиций с фотографиями, страница комплекта со ссылками на предметы',14],
   ['Импорт карточек: пуфы, кресла, ЛОФТ','Разбор папки импорта, выгрузка позиций, повторные прогоны синхронизации, сверка снимков и доезда до сайта',14]]},
- {t:'Этап 2 · Карточки товара и подготовка снимков', items:[
-  ['Вырезание мебели с сохранением собственной тени','Две маски на кадр: автоматический отбор предмета и расчёт по фону, чтобы тень осталась и не срезалась вместе с ножками',64],
-  ['Единый масштаб и общая линия пола по коллекциям','Все предметы коллекции приведены к одному масштабу и поставлены на общую линию пола',40],
-  ['Кадрирование под пропорции карточки и форматы витрин','Каждый снимок обрезан под пропорции карточки, отдельные кадры под квадратные и широкие блоки витрин',36],
-  ['Сборка карточек: привязка снимков к вариантам цвета','Кадры разложены по вариантам цвета и связаны с позициями каталога, чтобы переключение цвета меняло фотографию',20]]},
- {t:'Этап 3 · Многоязычность, SEO, порядок в данных', items:[
+ {id:'s3', block:'extra', t:'Многоязычность, SEO, порядок в данных', items:[
   ['Мультиязычная версия: поддомен и Polylang','Языковой поддомен направлен на корень основного сайта, Polylang настроен в режиме доменов с пробным прогоном',10],
   ['Переключатель языков скрыт','До наполнения второго каталога убран из интерфейса',1],
   ['Техническое SEO: аудит и правки','Разбор структуры, отчёт, исправления; отдельно 41 страница без описания, которые шаблоном не закрыть',16],
@@ -80,17 +117,7 @@ const STAGES = [
   ['Разбор уведомления Search Console','Проверено предупреждение о структурированных данных, найдена причина: отсутствие снимков у части позиций',2],
   ['Блок «Обсудим проект» на всех страницах','Текст сдвинут влево, справа место под снимок отдела продаж, слева кликабельные телефоны и почты с часами работы',6],
   ['Рекомендательная выдача в коллекциях','Блок рекомендаций после выдачи коллекции: подбор по типу и выгоде с разнесением по типам мебели',9]]},
- {t:'Этап 4 · Поиск по фото, кабинет партнёра, мобильная версия', items:[
-  ['Поиск по фотографии','Переведён на базу из 43 моделей; переделан на визуальное сравнение формы, точность 5 из 5, добавлен блок похожих',22],
-  ['Разбор внешнего сервиса распознавания','Попытка поднять сторонний сервис, разбор ошибок доступа; решение обойтись своим каналом внутри хостинга',4],
-  ['Импорт партнёра Enza Home','Заведён партнёр, разобраны две страницы товара, позиции выгружены с пересчётом по курсу ЦБ на день загрузки',6],
-  ['Запоминание пользователя в браузере','Панель перестала выбрасывать на вход при обновлении: сессия восстанавливается из браузера, роль по сохранённому ключу',4],
-  ['Модальное окно входа под мобильные','Окно ввода пароля перестало уезжать за край: ширина, отступы, прокрутка и размер полей приведены под телефон',3],
-  ['Кабинет партнёра: загрузка товара','Загрузка вручную и таблицей с шаблоном, артикулы от бренда, публикация в партнёрский каталог',14],
-  ['Мобильная версия платформы','Панель и кабинет на телефоне: бургер-меню, прокручиваемые таблицы с закреплённым столбцом, перестроенные формы и модальные окна',18],
-  ['Адаптив шапки','Девять точек перестроения между 900 и 1680 пикселями; мега-меню перестало обрезаться, мобильное меню получило вложенные списки',14],
-  ['Страница «Производство» и чистка «О компании»','Новая страница из семи блоков: цеха, цикл, материалы, контрактное производство; на «О компании» удалён баннер',10]]},
- {t:'Этап 5 · Фильтры, витрины, аудит сайта', items:[
+ {id:'s5', block:'extra', t:'Фильтры, витрины, аудит сайта', items:[
   ['Фильтры: коллекции и габариты','Список коллекций свёрнут до восьми; фильтры по ширине и высоте: разбор габаритов в числа, ползунки, три семейства шаблонов',16],
   ['Единая геометрия карточек','Карточки перестали разваливаться при разной длине названия и числе цветов: фиксированные зоны заголовка, цен и кнопки',6],
   ['Полноэкранный поиск по сайту','Окно во всю ширину с поиском по каталогу, тканям, назначениям и страницам: горячие клавиши, задержка ввода, отмена устаревших запросов',12],
@@ -101,7 +128,7 @@ const STAGES = [
   ['Мобильная сетка каталога','Две колонки вместо одной на всех витринах, убран рваный правый край, типографика под узкую колонку',12],
   ['Аудит сайта','268 адресов, 341 картинка, 1 495 ссылок, 149 схем товара, 14 типов страниц в мобильной ширине; 17 находок',14],
   ['Исправления по аудиту','Кнопка в 404, устаревшее окно, «0 ₽» у партнёров, телефоны в +7, схема товара с проверкой ссылки, восемь редиректов',16]]},
- {t:'Этап 6 · Защита базы, рассылка, сдача', items:[
+ {id:'s6', block:'extra', t:'Защита базы, рассылка, сдача', items:[
   ['Суточный обход битых картинок','Снимки с платформы проверяются раз в сутки, мёртвые складываются в список, чтобы карточки и разметка не вели на 404',5],
   ['Защита базы от стороннего доступа','Токены только в заголовке, фильтр по IP, лимиты входа, mu-плагин на сайте, закрыт журнал отладки на 55 МБ',14],
   ['Модуль рассылки с корпоративной почты','Шесть таблиц, свой SMTP-клиент, конструктор писем из блоков с предпросмотром, базы адресов с отписками, очередь порциями',46],
@@ -110,29 +137,46 @@ const STAGES = [
 
 const fmt0 = n => new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(n));
 const fmt2 = n => new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
-const HOURS = STAGES.reduce((a,s)=>a+s.items.reduce((b,i)=>b+i[2],0),0);
+const hours = s => s.items.reduce((a,i)=>a+i[2],0);
 
-function render(){
-  const target = TARGET, rate = target/HOURS;
-  let n=0, html='', sumLines=0;
-  STAGES.forEach(s=>{
-    html += `<tr class="stage"><td colspan="5">${s.t}</td></tr>`;
+function renderBlock(block, target){
+  const stages = STAGES.filter(s=>s.block===block);
+  // фиксированная ставка (3D) считается отдельно, остальное делит остаток суммы
+  const fixedSum = stages.filter(s=>s.rate).reduce((a,s)=>a+s.items.reduce((b,i)=>b+Math.round(i[2]*s.rate),0),0);
+  const flexHours = stages.filter(s=>!s.rate).reduce((a,s)=>a+hours(s),0);
+  const flexRate = flexHours ? (target-fixedSum)/flexHours : 0;
+  let html='', n=0, sumLines=0, totalHours=0;
+  stages.forEach(s=>{
+    const rate = s.rate || flexRate;
+    html += `<tr class="stage"><td colspan="5">${s.t}<button class="mv" data-id="${s.id}">${block==='paid'?'перенести в «сверх оплаченного»':'перенести в «оплачено»'}</button></td></tr>`;
     let sh=0, ss=0;
     s.items.forEach(it=>{ n++; const v=Math.round(it[2]*rate); sh+=it[2]; ss+=v; sumLines+=v;
       html += `<tr><td>${n}</td><td>${it[0]}<span class="d">${it[1]}</span></td><td class="num">${it[2]}</td><td class="num">${fmt2(rate)}</td><td class="num">${fmt0(v)}</td></tr>`; });
+    totalHours += sh;
     html += `<tr class="sub"><td></td><td>Подытог</td><td class="num">${sh}</td><td></td><td class="num">${fmt0(ss)}</td></tr>`;
   });
   const round = target - sumLines;
-  html += `<tr><td>—</td><td>Округление<span class="d">Разница от округления построчных сумм до рубля</span></td><td class="num">—</td><td class="num">—</td><td class="num">${round<0?'−':''}${fmt0(Math.abs(round))}</td></tr>`;
-  html += `<tr class="total"><td></td><td>Итого по смете</td><td class="num">${HOURS}</td><td class="num">${fmt2(rate)}</td><td class="num">${fmt0(target)}</td></tr>`;
-  document.querySelector('#t tbody').innerHTML = html;
-
-  document.getElementById('hero').innerHTML = `
-    <div class="card total"><div class="label">Итого по смете</div><div class="value">${fmt0(target)} ₽</div><div class="hint">без НДС, зачислено на баланс Solar Staff</div></div>
-    <div class="card"><div class="label">Период</div><div class="value">июль–август</div><div class="hint">2026 год, два месяца работ</div></div>
-    <div class="card"><div class="label">Объём</div><div class="value">${HOURS} ч</div><div class="hint">49 позиций, шесть этапов</div></div>
-    <div class="card"><div class="label">Ставка часа</div><div class="value">${fmt2(rate)} ₽</div><div class="hint">285 000 ₽ ÷ 619 ч</div></div>`;
+  if(round) html += `<tr><td>—</td><td>Округление<span class="d">Разница от округления построчных сумм до рубля</span></td><td class="num">—</td><td class="num">—</td><td class="num">${round<0?'−':''}${fmt0(Math.abs(round))}</td></tr>`;
+  html += `<tr class="total ${block}"><td></td><td>${block==='paid'?'Итого оплачено':'Итого к оплате'}</td><td class="num">${totalHours}</td><td class="num">${flexHours?fmt2(flexRate):'—'}</td><td class="num">${fmt0(target)}</td></tr>`;
+  return {html, hours:totalHours, flexRate, fixedSum};
 }
+
+function render(){
+  const p = renderBlock('paid', PAID_TARGET), e = renderBlock('extra', EXTRA_TARGET);
+  document.querySelector('#tPaid tbody').innerHTML = p.html;
+  document.querySelector('#tExtra tbody').innerHTML = e.html;
+  document.getElementById('sumPaid').textContent = fmt0(PAID_TARGET)+' ₽';
+  document.getElementById('sumExtra').textContent = fmt0(EXTRA_TARGET)+' ₽';
+  document.getElementById('hero').innerHTML = `
+    <div class="card"><div class="label">Всего работ за два месяца</div><div class="value">${fmt0(PAID_TARGET+EXTRA_TARGET)} ₽</div><div class="hint">${p.hours+e.hours} ч, без НДС</div></div>
+    <div class="card paid"><div class="label">Оплачено через Solar Staff</div><div class="value">${fmt0(PAID_TARGET)} ₽</div><div class="hint">${p.hours} ч, закрыто отчётами за июль и август</div></div>
+    <div class="card extra"><div class="label">Сверх оплаченного, к оплате</div><div class="value">${fmt0(EXTRA_TARGET)} ₽</div><div class="hint">${e.hours} ч, в оплаченный объём не входили</div></div>`;
+  document.getElementById('foot').textContent = `Часы по всем позициям взяты из сметного расчёта по фактическому коду сайта и платформы. 3D-модели посчитаны по ставке ${fmt2(RATE_3D)} ₽/ч, как в отдельной смете на 110 000 ₽. Ставка остальных работ в каждом блоке получена делением суммы блока на часы: ${fmt2(p.flexRate)} ₽/ч в оплаченном блоке и ${fmt2(e.flexRate)} ₽/ч в блоке сверх оплаченного. Построчные суммы округлены до рубля, разница вынесена в строку «Округление». Деньги Solar Staff зачислены на баланс без НДС: 285 000 ₽, списано задачами 284 991,40 ₽, остаток 8,60 ₽.`;
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.mv'); if(!b) return;
+  const s = STAGES.find(x=>x.id===b.dataset.id); s.block = s.block==='paid'?'extra':'paid'; render();
+});
 render();
 </script>
 </body>
